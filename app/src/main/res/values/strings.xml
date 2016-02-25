@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">RealFace</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_prepare_camera">PrepareCameraActivity</string>
+    <string name="title_activity_camera">CameraActivity</string>
+    <string name="low_storage_error">ストレージが少ないです</string>
+    <string name="title_activity_result">ResultActivity</string>
+</resources>
