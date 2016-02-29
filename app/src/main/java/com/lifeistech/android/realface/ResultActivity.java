@@ -14,6 +14,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.vision.Detector;
@@ -29,6 +30,7 @@ import java.io.InputStream;
 public class ResultActivity extends AppCompatActivity {
 
     static String TAG = "Result Activity";
+    private TextView pointTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,8 @@ public class ResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_result);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        pointTextView = (TextView) findViewById(R.id.pointTextView);
 
         detectFace();
     }
@@ -102,6 +106,8 @@ public class ResultActivity extends AppCompatActivity {
                 Log.d(TAG, String.format("%.2f", faces.get(i).getIsSmilingProbability()) + "点");
             }
 
+            //getIsSmilingProbabilityがnullなら顔認識できてない
+            pointTextView.setText((100f - faces.get(0).getIsSmilingProbability() * 100f) + "点");
 
             // Although detector may be used multiple times for different images, it should be released
             // when it is no longer needed in order to free native resources.

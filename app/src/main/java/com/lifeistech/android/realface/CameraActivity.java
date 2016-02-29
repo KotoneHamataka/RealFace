@@ -4,10 +4,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +30,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.face.Face;
@@ -39,13 +43,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CameraActivity extends AppCompatActivity {
 
     static String TAG = "Camera Activity";
+    FrameLayout fl;
     SurfaceView sv;
     SurfaceHolder sh;
     Camera cam;
+    Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +61,7 @@ public class CameraActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        FrameLayout fl = new FrameLayout(this);
+        fl = new FrameLayout(this);
         setContentView(fl);
 
         sv = new SurfaceView(this);
@@ -82,7 +90,7 @@ public class CameraActivity extends AppCompatActivity {
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
-            closeCamera();
+            //closeCamera();
         }
 
         private void openCamera(SurfaceHolder holder) {
@@ -186,33 +194,51 @@ public class CameraActivity extends AppCompatActivity {
     class TakePictureClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            cam.takePicture(null, null, new TakePictureCallback());
+            /*
+            Intent intent = new Intent(CameraActivity.this, SmileActivity.class);
+            startActivity(intent);
+            */
+            View blankView = new View(getApplicationContext());
+            blankView.setBackgroundColor(Color.WHITE);
+            fl.addView(blankView);
+
+            ImageView gifImageView = new ImageView(getApplicationContext());
+
+            Glide.with(getApplicationContext())
+                    .load(Uri.parse("file:///android_asset/make_smile_01.gif"))
+                    .asGif()
+                    .crossFade()
+                    .into(gifImageView);
+
+            fl.addView(gifImageView);
+
+            //タイマーセット
+            Timer timer = new Timer(true);
+            //10秒後にタイマーセット
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            //10秒後に撮影
+                            if (cam != null) {
+                                cam.takePicture(null, null, new TakePictureCallback());
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Cam is Null", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+                }
+            }, 10000);
+
         }
     }
 
     class TakePictureCallback implements Camera.PictureCallback {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            /*
-            try {
-                File dir = new File(
-                        Environment.getExternalStorageDirectory(), "Camera");
-                if(!dir.exists()) {
-                    dir.mkdir();
-                }
-                File f = new File(dir, "img.jpg");
-                FileOutputStream fos = new FileOutputStream(f);
-                fos.write(data);
-                Toast.makeText(getApplicationContext(),
-                        "写真を保存しました", Toast.LENGTH_LONG).show();
-                fos.close();
-                //cam.startPreview();
-
-                Intent intent = new Intent(CameraActivity.this, ResultActivity.class);
-                startActivity(intent);
-            } catch (Exception e) { }
-            */
-
             if (data != null) {
 
                 int rotation = getWindowManager().getDefaultDisplay().getRotation();
@@ -232,7 +258,7 @@ public class CameraActivity extends AppCompatActivity {
                     m.setRotate(180);
                 }
                 Bitmap original = BitmapFactory.decodeByteArray(data, 0, data.length);
-                Bitmap rotated = Bitmap.createBitmap( original, 0, 0, original.getWidth(), original.getHeight(), m, true);
+                Bitmap rotated = Bitmap.createBitmap(original, 0, 0, original.getWidth(), original.getHeight(), m, true);
 
                 FileOutputStream fos = null;
                 try {
@@ -255,7 +281,7 @@ public class CameraActivity extends AppCompatActivity {
                 // プレビューを再開する
                 //camera.startPreview();
 
-                Intent intent = new Intent(CameraActivity.this, ResultActivity.class);
+                Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
                 startActivity(intent);
             }
         }

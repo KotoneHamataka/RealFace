@@ -5,4 +5,5 @@
     <string name="title_activity_camera">CameraActivity</string>
     <string name="low_storage_error">ストレージが少ないです</string>
     <string name="title_activity_result">ResultActivity</string>
+    <string name="title_activity_smile">SmileActivity</string>
 </resources>

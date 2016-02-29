@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorPrimaryDark" />
+            <corners android:radius="6dp"/>
+            <stroke android:color="@color/colorAccent"
+                android:width="2dp"/>
+            <padding android:left="16dp"
+                android:right="16dp"/>
+        </shape>
+    </item>
+    <!-- 平常時 -->
+    <item>
+        <!-- コードで画像を生成 -->
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <corners
+                android:bottomLeftRadius="24dp"
+                android:bottomRightRadius="24dp"
+                android:topLeftRadius="24dp"
+                android:topRightRadius="24dp"/>
+            <stroke android:color="@color/colorPrimary"
+                android:width="2dp"/>
+            <padding android:left="16dp"
+                android:right="16dp"/>
+        </shape>
+    </item>
+</selector>

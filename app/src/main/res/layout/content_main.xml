@@ -12,19 +12,10 @@
     tools:context="com.lifeistech.android.realface.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="detect Face"
-        android:id="@+id/button"
-        android:onClick="detectFace"
-        android:layout_alignParentTop="true"
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/imageView"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
-
-    <com.lifeistech.android.realface.FaceView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/faceView"
-        android:layout_below="@+id/button"
-        android:layout_alignStart="@+id/button" />
 </RelativeLayout>
