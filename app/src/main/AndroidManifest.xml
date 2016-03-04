@@ -24,10 +24,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PrepareCameraActivity"
-            android:label="@string/title_activity_prepare_camera"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".CameraActivity"
             android:label="@string/title_activity_camera"
             android:theme="@style/AppTheme.NoActionBar" />

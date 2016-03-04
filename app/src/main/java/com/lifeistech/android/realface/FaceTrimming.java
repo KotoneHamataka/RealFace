@@ -74,8 +74,8 @@ public class FaceTrimming implements Transformation {
         final Bitmap dest = Bitmap.createBitmap(source,
                 (int) point.x,
                 (int) point.y,
-                (int) (source.getWidth() - point.x),
-                (int) (source.getHeight() - point.y));
+                (int) destMaxSide,
+                (int) destMaxSide);
         source.recycle();
         return dest;
     }

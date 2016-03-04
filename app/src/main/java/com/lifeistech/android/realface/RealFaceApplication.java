@@ -20,8 +20,9 @@ public class RealFaceApplication extends Application {
 
         mFaceDetector = new FaceDetector.Builder(this)
                 .setTrackingEnabled(false)
-                        //.setMode(FaceDetector.FAST_MODE)
                 .setLandmarkType(FaceDetector.ALL_LANDMARKS)
+                .setMode(FaceDetector.ACCURATE_MODE)
+                .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
                 .build();
     }
 

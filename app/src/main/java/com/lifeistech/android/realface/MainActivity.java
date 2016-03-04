@@ -1,61 +1,34 @@
 package com.lifeistech.android.realface;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.util.SparseArray;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.util.ViewPreloadSizeProvider;
-import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.vision.Detector;
-import com.google.android.gms.vision.Frame;
-import com.google.android.gms.vision.face.Face;
-import com.google.android.gms.vision.face.FaceDetector;
 import com.kii.cloud.storage.Kii;
 import com.kii.cloud.storage.KiiBucket;
 import com.kii.cloud.storage.KiiObject;
-import com.kii.cloud.storage.KiiUser;
-import com.kii.cloud.storage.UserFields;
 import com.kii.cloud.storage.exception.app.AppException;
 import com.kii.cloud.storage.query.KiiQuery;
 import com.kii.cloud.storage.query.KiiQueryResult;
-import com.kii.cloud.storage.resumabletransfer.KiiRTransfer;
-import com.kii.cloud.storage.resumabletransfer.KiiRTransferCallback;
-import com.kii.cloud.storage.resumabletransfer.KiiUploader;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -67,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private GoogleApiClient client;
     private ImageView no1_imageView, no2_imageView, no3_imageView;
+    private TextView no1_name, no1_score, no2_name, no2_score, no3_name, no3_score;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, PrepareCameraActivity.class);
+                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
                 startActivity(intent);
             }
         });
@@ -87,9 +61,23 @@ public class MainActivity extends AppCompatActivity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
-        no1_imageView = (ImageView) findViewById(R.id.no1_imageView);
-        no2_imageView = (ImageView) findViewById(R.id.no2_imageView);
-        no3_imageView = (ImageView) findViewById(R.id.no3_imageView);
+        no1_imageView = (ImageView) findViewById(R.id.rank1_icon);
+        no1_name = (TextView) findViewById(R.id.rank1_name);
+        no1_score = (TextView) findViewById(R.id.rank1_score);
+        no1_name.setVisibility(View.INVISIBLE);
+        no1_score.setVisibility(View.INVISIBLE);
+        no2_imageView = (ImageView) findViewById(R.id.rank2_icon);
+        no2_name = (TextView) findViewById(R.id.rank2_name);
+        no2_score = (TextView) findViewById(R.id.rank2_score);
+        no2_name.setVisibility(View.INVISIBLE);
+        no2_score.setVisibility(View.INVISIBLE);
+        no3_imageView = (ImageView) findViewById(R.id.rank3_icon);
+        no3_name = (TextView) findViewById(R.id.rank3_name);
+        no3_score = (TextView) findViewById(R.id.rank3_score);
+        no3_name.setVisibility(View.INVISIBLE);
+        no3_score.setVisibility(View.INVISIBLE);
+
+
 
         KiiBucket appBucket = Kii.bucket("user");
 
@@ -116,12 +104,78 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public class AsyncLoadData extends AsyncTask<Void, Integer, Boolean> {
+    public void slide(View view) {
+        if (view.getId() == R.id.rank1_icon) {
+            doAnimationToBtnXCode(1);
+        } else if (view.getId() == R.id.rank2_icon) {
+            doAnimationToBtnXCode(2);
+        } else if (view.getId() == R.id.rank3_icon) {
+            doAnimationToBtnXCode(3);
+        }
+    }
+
+    /** プログラムで定義したプロパティアニメーションを実行 */
+    private void doAnimationToBtnXCode(int rank) {
+        android.view.animation.Interpolator interpolator = AnimationUtils.loadInterpolator(this, android.R.interpolator.decelerate_quint);
+
+        ObjectAnimator animStart, animEnd, nameStart, nameEnd, scoreStart, scoreEnd;
+
+        if (rank == 1) {
+            animStart = ObjectAnimator.ofFloat(no1_imageView, "translationX", 0.f, 600.f).setDuration(3000);
+            animEnd = ObjectAnimator.ofFloat(no1_imageView, "translationX", 600.f, 0.f).setDuration(3000);
+            nameStart = ObjectAnimator.ofFloat(no1_name, "translationX", -300.f, 200.f).setDuration(2300);
+            nameEnd = ObjectAnimator.ofFloat(no1_name, "translationX", 200.f, -300f).setDuration(2300);
+            scoreStart = ObjectAnimator.ofFloat(no1_score, "translationX", -300.f, 200.f).setDuration(2300);
+            scoreEnd = ObjectAnimator.ofFloat(no1_score, "translationX", 200.f, -300f).setDuration(2300);
+        } else if (rank == 2) {
+            animStart = ObjectAnimator.ofFloat(no2_imageView, "translationX", 0.f, -600.f).setDuration(3000);
+            animEnd = ObjectAnimator.ofFloat(no2_imageView, "translationX", -600.f, 0.f).setDuration(3000);
+            nameStart = ObjectAnimator.ofFloat(no2_name, "translationX", 300.f, -200.f).setDuration(2300);
+            nameEnd = ObjectAnimator.ofFloat(no2_name, "translationX", -200.f, 300f).setDuration(2300);
+            scoreStart = ObjectAnimator.ofFloat(no2_score, "translationX", 300.f, -200.f).setDuration(2300);
+            scoreEnd = ObjectAnimator.ofFloat(no2_score, "translationX", -200.f, 300f).setDuration(2300);
+        } else {
+            animStart = ObjectAnimator.ofFloat(no3_imageView, "translationX", 0.f, 600.f).setDuration(3000);
+            animEnd = ObjectAnimator.ofFloat(no3_imageView, "translationX", 600.f, 0.f).setDuration(3000);
+            nameStart = ObjectAnimator.ofFloat(no3_name, "translationX", -300.f, 200.f).setDuration(2300);
+            nameEnd = ObjectAnimator.ofFloat(no3_name, "translationX", 200.f, -300f).setDuration(2300);
+            scoreStart = ObjectAnimator.ofFloat(no3_score, "translationX", -300.f, 200.f).setDuration(2300);
+            scoreEnd = ObjectAnimator.ofFloat(no3_score, "translationX", 200.f, -300f).setDuration(2300);
+        }
+        animStart.setInterpolator(interpolator);
+        animEnd.setInterpolator(interpolator);
+
+        AnimatorSet set = new AnimatorSet();
+        AnimatorSet setName = new AnimatorSet();
+        AnimatorSet setScore = new AnimatorSet();
+        set.playSequentially(animStart, animEnd);
+        setName.playSequentially(nameStart, nameEnd);
+        setScore.playSequentially(scoreStart, scoreEnd);
+        set.start();
+        setName.start();
+        setScore.start();
+
+        if (rank == 1) {
+            no1_name.setVisibility(View.VISIBLE);
+            no1_score.setVisibility(View.VISIBLE);
+        } else if (rank == 2) {
+            no2_name.setVisibility(View.VISIBLE);
+            no2_score.setVisibility(View.VISIBLE);
+        } else if (rank == 3) {
+            no3_name.setVisibility(View.VISIBLE);
+            no3_score.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    public class AsyncLoadData extends AsyncTask<Void, Integer, String[][]> {
         @Override
-        protected Boolean doInBackground(Void... voids) {
+        protected String[][] doInBackground(Void... voids) {
             KiiQuery score_query = new KiiQuery();
             score_query.sortByDesc("score");
             score_query.setLimit(3);
+
+            String[][] userData = new String[3][2];
 
             try {
                 int i = 1;
@@ -133,12 +187,17 @@ public class MainActivity extends AppCompatActivity {
 
                 KiiQueryResult<KiiObject> result = Kii.bucket("user").query(score_query);
                 List<KiiObject> objectList = result.getResult();
+
                 for (KiiObject object : objectList){
                     File f = new File(dir, "rank" + i + ".jpg");
                     object.refresh();
 
-                    int score = object.getInt("score");
                     String name = object.getString("name");
+                    int score = object.getInt("score");
+                    userData[i-1][0] = name;
+                    userData[i-1][1] = String.valueOf(score);
+
+
                     object.downloadBody(f);
                     i++;
                 }
@@ -149,7 +208,17 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            return true;
+            return userData;
+        }
+
+        @Override
+        protected void onPostExecute(String[][] userData) {
+            no1_name.setText(userData[0][0]);
+            no1_score.setText(userData[0][1]);
+            no2_name.setText(userData[1][0]);
+            no2_score.setText(userData[1][1]);
+            no3_name.setText(userData[2][0]);
+            no3_score.setText(userData[2][1]);
         }
     }
 

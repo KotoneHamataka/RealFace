@@ -9,12 +9,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,33 +45,44 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ResultActivity extends AppCompatActivity {
+public class ResultActivity extends FragmentActivity implements View.OnClickListener{
 
     static String TAG = "Result Activity";
     private TextView pointTextView;
-    private Button nextButton;
+    private ImageButton nextButton;
+    private int score = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        detectFace();
 
         pointTextView = (TextView) findViewById(R.id.pointTextView);
-        nextButton = (Button) findViewById(R.id.nextButton);
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), DataLoadActivity.class);
-                startActivity(intent);
-            }
-        });
+        nextButton = (ImageButton) findViewById(R.id.homeButton);
+        nextButton.setOnClickListener(this);
 
-        detectFace(getIntent().getStringExtra("Name"));
+
     }
 
-    public void detectFace(String name) {
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onClick(View view) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("score", score);
+
+        HomeDialogFragment homeDialogFragment = new HomeDialogFragment();
+        homeDialogFragment.setArguments(bundle);
+        homeDialogFragment.show(getSupportFragmentManager(), "Fragment");
+
+    }
+
+    public void detectFace() {
         try {
             File dir = new File(Environment.getExternalStorageDirectory(), "Camera");
             File f = new File(dir, "img.jpg");
@@ -131,7 +144,7 @@ public class ResultActivity extends AppCompatActivity {
                 Log.d(TAG, String.format("%.2f", faces.get(i).getIsSmilingProbability()) + "点");
             }
 
-            int score = (int) (100f - faces.get(0).getIsSmilingProbability() * 100f);
+            score = (int) (100f - faces.get(0).getIsSmilingProbability() * 100f);
 
             //getIsSmilingProbabilityがnullなら顔認識できてない
             pointTextView.setText(score + "点");
@@ -139,102 +152,16 @@ public class ResultActivity extends AppCompatActivity {
             // Although detector may be used multiple times for different images, it should be released
             // when it is no longer needed in order to free native resources.
             safeDetector.release();
-
-            saveScore(name, score, bitmap);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+
+            Toast.makeText(getApplicationContext(), "もう一度撮影してください!!", Toast.LENGTH_LONG).show();
         }
     }
 
-    public class User {
-        private int score;
-        private String name;
-        private Bitmap bitmap;
 
-            public User() {
 
-            }
 
-            public User(String name, int score, Bitmap bitmap) {
-                this.name = name;
-                this.score = score;
-                this.bitmap = bitmap;
-            }
-
-        public String getName() {
-            return name;
-        }
-
-        public int getScore() {
-            return score;
-        }
-
-        public Bitmap getBitmap() {
-            return bitmap;
-        }
-
-    }
-
-    public void saveScore(String name, int score, Bitmap bitmap) {
-        User user = new User(name, score, bitmap);
-        AsyncSaveData asyncTask = new AsyncSaveData();
-        asyncTask.execute(user);
-    }
-
-    public class AsyncSaveData extends AsyncTask<User, Integer, Boolean> {
-        @Override
-        protected Boolean doInBackground(User... users) {
-            KiiObject object = Kii.bucket("user").object();
-
-            object.set("name", users[0].getName());
-            object.set("score", users[0].getScore());
-
-            File dir = new File(Environment.getExternalStorageDirectory(), "Camera");
-            File f = new File(dir, "img.jpg");
-
-            KiiUploader uploader = object.uploader(getApplicationContext(), f);
-
-            try {
-                // You can set predefined fields and custom fields.
-                UserFields userFields = new UserFields();
-                userFields.putDisplayName("Player 1");
-                userFields.set("HighScore", 0);
-                KiiUser pseudoUser = KiiUser.registerAsPseudoUser(userFields);
-                // Must save the token.
-                // If it's lost the user will not be able to access KiiCloud.
-                String accessToken = pseudoUser.getAccessToken();
-                // (assuming that your application implements this function)
-                //storeToken(accessToken);
-
-                // Start uploading
-                uploader.transferAsync(new KiiRTransferCallback() {
-                    @Override
-                    public void onStart(KiiRTransfer operator) {
-                        Log.d(TAG, "start transfer");
-                    }
-
-                    @Override
-                    public void onProgress(KiiRTransfer operator, long completedInBytes, long totalSizeinBytes) {
-                        float progress = (float) completedInBytes / (float) totalSizeinBytes * 100.0f;
-                        Log.d(TAG, progress + "% completed");
-                    }
-
-                    @Override
-                    public void onTransferCompleted(KiiRTransfer operator, Exception exception) {
-                        if (exception != null) {
-                            // Error handling(Includes suspending/terminating)
-                            return;
-                        }
-                    }
-                });
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (AppException e) {
-                e.printStackTrace();
-            }
-
-            return true;
-        }
-    }
 }

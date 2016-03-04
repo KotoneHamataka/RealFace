@@ -11,7 +11,9 @@
     <!-- ボタン通常表示時 定義 -->
     <item android:state_pressed="false">
         <shape android:shape="oval" android:useLevel="false">
-            <solid android:color="@android:color/white" />
+            <solid android:color="@android:color/transparent" />
+            <stroke android:color="@android:color/white"
+                android:width="10dp"/>
         </shape>
     </item>
 </selector>

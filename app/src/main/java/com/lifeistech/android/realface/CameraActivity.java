@@ -15,9 +15,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.LayoutDirection;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -44,6 +46,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -56,14 +59,14 @@ public class CameraActivity extends AppCompatActivity {
     Camera cam;
     Handler handler = new Handler();
     String userName;
+    Button btn;
+    private final int GIF_NUM = 13;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-        userName = getIntent().getStringExtra("Name");
 
         fl = new FrameLayout(this);
         setContentView(fl);
@@ -72,9 +75,9 @@ public class CameraActivity extends AppCompatActivity {
         sh = sv.getHolder();
         sh.addCallback(new SurfaceHolderCallback());
 
-        Button btn = new Button(this);
-        btn.setText("撮影");
-        btn.setLayoutParams(new FrameLayout.LayoutParams(200, 150));
+        btn = new Button(this);
+        btn.setLayoutParams(new FrameLayout.LayoutParams(200, 200, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL));
+        btn.setBackgroundResource(R.drawable.btn_oval);
         btn.setOnClickListener(new TakePictureClickListener());
 
         fl.addView(sv);
@@ -209,11 +212,14 @@ public class CameraActivity extends AppCompatActivity {
             ImageView gifImageView = new ImageView(getApplicationContext());
             GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(gifImageView);
 
+            Random random = new Random();
+            int gifNum = random.nextInt(GIF_NUM) + 1;
             Glide.with(getApplicationContext())
-                    .load(Uri.parse("file:///android_asset/make_smile_01.gif"))
+                    .load(Uri.parse("file:///android_asset/make_smile_" + gifNum +".gif"))
                     .into(imageViewTarget);
 
             fl.addView(gifImageView);
+            fl.removeView(btn);
 
             //タイマーセット
             Timer timer = new Timer(true);
@@ -235,7 +241,7 @@ public class CameraActivity extends AppCompatActivity {
                     });
 
                 }
-            }, 5000);
+            }, 7000);
 
         }
     }
@@ -266,8 +272,7 @@ public class CameraActivity extends AppCompatActivity {
 
                 FileOutputStream fos = null;
                 try {
-                    File dir = new File(
-                            Environment.getExternalStorageDirectory(), "Camera");
+                    File dir = new File(Environment.getExternalStorageDirectory(), "Camera");
                     if(!dir.exists()) {
                         dir.mkdir();
                     }
