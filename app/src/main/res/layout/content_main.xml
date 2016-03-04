@@ -10,12 +10,36 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.lifeistech.android.realface.MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_main"
+    android:background="#878686">
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/imageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/no2_imageView"
+        android:background="@drawable/btn_oval"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_toEndOf="@+id/no1_imageView"
+        android:scaleType="fitCenter" />
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/no1_imageView"
+        android:layout_above="@+id/no2_imageView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="89dp"
+        android:background="@drawable/btn_oval"
+        android:scaleType="fitCenter" />
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/no3_imageView"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/btn_oval"
+        android:layout_below="@+id/no2_imageView"
+        android:layout_toStartOf="@+id/no1_imageView"
+        android:scaleType="fitCenter" />
+
 </RelativeLayout>

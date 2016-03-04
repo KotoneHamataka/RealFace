@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.face.Face;
@@ -54,12 +55,15 @@ public class CameraActivity extends AppCompatActivity {
     SurfaceHolder sh;
     Camera cam;
     Handler handler = new Handler();
+    String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        userName = getIntent().getStringExtra("Name");
 
         fl = new FrameLayout(this);
         setContentView(fl);
@@ -203,12 +207,11 @@ public class CameraActivity extends AppCompatActivity {
             fl.addView(blankView);
 
             ImageView gifImageView = new ImageView(getApplicationContext());
+            GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(gifImageView);
 
             Glide.with(getApplicationContext())
                     .load(Uri.parse("file:///android_asset/make_smile_01.gif"))
-                    .asGif()
-                    .crossFade()
-                    .into(gifImageView);
+                    .into(imageViewTarget);
 
             fl.addView(gifImageView);
 
@@ -221,9 +224,10 @@ public class CameraActivity extends AppCompatActivity {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            //10秒後に撮影
+                            //5秒後に撮影
                             if (cam != null) {
                                 cam.takePicture(null, null, new TakePictureCallback());
+
                             } else {
                                 Toast.makeText(getApplicationContext(), "Cam is Null", Toast.LENGTH_SHORT).show();
                             }
@@ -231,7 +235,7 @@ public class CameraActivity extends AppCompatActivity {
                     });
 
                 }
-            }, 10000);
+            }, 5000);
 
         }
     }
@@ -278,10 +282,11 @@ public class CameraActivity extends AppCompatActivity {
                 original.recycle();
                 rotated.recycle();
 
-                // プレビューを再開する
-                //camera.startPreview();
+                cam.release();
+                cam = null;
 
                 Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+                intent.putExtra("Name", userName);
                 startActivity(intent);
             }
         }

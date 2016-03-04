@@ -25,7 +25,16 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
         android:id="@+id/pointTextView"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignBottom="@+id/faceView"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="39dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="next"
+        android:id="@+id/nextButton"
+        android:layout_alignBottom="@+id/faceView"
+        android:layout_alignEnd="@+id/faceView" />
 
 </RelativeLayout>

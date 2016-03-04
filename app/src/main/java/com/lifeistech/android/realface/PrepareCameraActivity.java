@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.EditText;
 
 public class PrepareCameraActivity extends AppCompatActivity {
 
@@ -17,11 +18,14 @@ public class PrepareCameraActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        final EditText editText = (EditText) findViewById(R.id.nameEdit);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(PrepareCameraActivity.this, CameraActivity.class);
+                intent.putExtra("Name", editText.getText().toString());
                 startActivity(intent);
             }
         });
