@@ -158,6 +158,8 @@ public class ResultActivity extends FragmentActivity implements View.OnClickList
             e.printStackTrace();
 
             Toast.makeText(getApplicationContext(), "もう一度撮影してください!!", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
+            startActivity(intent);
         }
     }
 
