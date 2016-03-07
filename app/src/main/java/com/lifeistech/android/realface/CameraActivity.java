@@ -241,7 +241,7 @@ public class CameraActivity extends AppCompatActivity {
                     });
 
                 }
-            }, 7000);
+            }, 10000);
 
         }
     }

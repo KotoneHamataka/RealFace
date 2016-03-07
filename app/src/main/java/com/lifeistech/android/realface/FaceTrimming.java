@@ -42,7 +42,7 @@ public class FaceTrimming implements Transformation {
 
         RectF sourceRect = null;
         for (int i = 0, size = faces.size(); i < size; i++) {
-            final Face face = faces.get(i);
+            final Face face = faces.valueAt(i);
             final PointF position = face.getPosition();
             final RectF faceRect = new RectF(position.x,
                     position.y,
