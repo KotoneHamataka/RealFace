@@ -32,8 +32,6 @@ public class AsyncSaveData extends AsyncTask<User, Integer, Boolean> {
         File dir = new File(Environment.getExternalStorageDirectory(), "Camera");
         File f = new File(dir, "img.jpg");
 
-        KiiUploader uploader = object.uploader(users[0].getContext(), f);
-
         try {
             // You can set predefined fields and custom fields.
             UserFields userFields = new UserFields();
@@ -46,28 +44,9 @@ public class AsyncSaveData extends AsyncTask<User, Integer, Boolean> {
             // (assuming that your application implements this function)
             //storeToken(accessToken);
 
+            object.save();
             // Start uploading
-            uploader.transferAsync(new KiiRTransferCallback() {
-                @Override
-                public void onStart(KiiRTransfer operator) {
-                    Log.d(TAG, "start transfer");
-                }
-
-                @Override
-                public void onProgress(KiiRTransfer operator, long completedInBytes, long totalSizeinBytes) {
-                    float progress = (float) completedInBytes / (float) totalSizeinBytes * 100.0f;
-                    Log.d(TAG, progress + "% completed");
-                }
-
-                @Override
-                public void onTransferCompleted(KiiRTransfer operator, Exception exception) {
-                    if (exception != null) {
-                        // Error handling(Includes suspending/terminating)
-                        return;
-                    }
-                }
-            });
-
+            object.uploadBody(f, "image/jpeg");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (AppException e) {

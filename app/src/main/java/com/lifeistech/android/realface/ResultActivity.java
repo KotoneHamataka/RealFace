@@ -158,7 +158,14 @@ public class ResultActivity extends FragmentActivity implements View.OnClickList
                 Log.d(TAG, "smile = " + smile);
                 score = (int) (100f - smile * 100f);
             }
+        }
 
+        if (faces.size() == 0 || score >= 100 || score < 0) {
+            Intent intent = new Intent(this, CameraActivity.class);
+            startActivity(intent);
+
+            Toast.makeText(this, "顔が認識されませんでした。\nもう一度撮影してください!", Toast.LENGTH_LONG).show();
+        } else {
             pointTextView.setText(score + "点");
         }
 

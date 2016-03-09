@@ -197,7 +197,6 @@ public class MainActivity extends AppCompatActivity {
                     userData[i-1][0] = name;
                     userData[i-1][1] = String.valueOf(score);
 
-
                     object.downloadBody(f);
                     i++;
                 }
